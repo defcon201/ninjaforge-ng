@@ -1,0 +1,163 @@
+Ninja OS Live OS Container Format
+=================================
+
+Revision 0.9-pre
+
+The LiveOS container format is a zip file with index and directory structure.
+The point of this container format is contain an partition image, documentation,
+install scripts, gpg signatures and hash sums of the former.
+
+LiveOS container format, as made for Ninja OS:
+
+	* Use the extension liveos.zip
+	* Use the zip compression/container format
+	* Use the following directory/file structure
+	* Check integrity with MD5 hash sums and/or detached GPG signatures
+	*-- If signed with GPG. All signatures made with the same key and that
+	    key listed in the index_file
+
+For package integrity, the package MUST include either MD5 hash sums as
+described below if not using GPG. A package without either is to be considered
+invalid
+
+Index File
+----------
+The index file is textfile name liveos_version.conf in the root of the archive.
+It uses key=value pairs seperated by a "=". These may be used as variables in
+related tools. Must NOT use variable names of commonly used or default shell
+variables. All keys must be uppercase. Unless otherwise stated STRING shall have
+a max length of 255, and INT shall have a max value of 2^32.
+
+The following keys are to be valid(VARIABLE TYPE):
+
+**MANDATORY**
+FORMAT_VER	- Format revision of the index file. Version 2 corresponds to
+		  version 1 of this document. All subsequent versions will match
+		  . This is for backwards compatibility with pre-spec versions
+		  of Ninja OS(INT)
+
+OSNAME		- Name of the Operating System contained in the Archive. Should
+		  be in quotes. OSSLUG is generated from this by removing
+		  spaces and special characters. Value may not excede 24
+		  characters (STRING)
+
+OSVERSION	- Version of the Operating System contained in the Archive.
+		  Value may not excede 12 characters. (STRING)
+		  
+OSARCH		- Machine Archecture of Operating System contained in the
+		  Archive. This should match the OS's uname -m. Value may not
+		  excede 12 characters (STRING)
+		  
+PART_SIZE	- Size in Megabytes of the OS Partition contained in the
+		  archive. (INT)
+
+**RECOMENDED**
+
+This is manditory of GPG signatures are to be used. The presence of either one
+of these variables is to mean that GPG signature checking is enabled. Only a
+single key may be used, and must be specified. These variables also must match
+Only one key may be used. CONF_KEYNAME and CONFG_KEYSIG must match eachother as
+well.
+
+GPG signatures themselves are optional. 
+
+CONF_KEYNAME	- KeyID of the GPG key used in the signing of this package.
+		  (STRING)
+
+CONF_KEYSIG	- Full GPG signature for the key used in signing this package.
+		  (STRING)
+
+If GPG is enabled, then a package is only valid if
+	* The GPG variables are present and match
+	* Signatures are present in the gpg/ directory for all present files
+	* Signatures are checked to be valid using accepted GPG methods
+	* Signatures are done with GPG key described in GPG variables.
+
+**EXTRA**
+Optional part of the spec. Used internally with Ninja OS.
+
+BOOT_BACKGROUND - File path from inside the Operating System of a background
+		  picture for the OS. This is considered security sensative
+		  because with Ninja OS, it is used to identify name and version
+		  of the OS. Used internally by Ninja OS (STRING)
+  
+BACKGROUND_SHA256- SHA256 hash sum of the background image displayed by the
+		   bootloader, as defined in BOOT_BACKGROUND. This is to verify
+		   securily, that the name and version displayed at boot is in
+		   fact correct. (STRING)
+		   
+AUTHOR_EMAIL	- contact email of the person, team or organization responsible
+		  for the maintenance of this Live OS. Should go to the
+		  technical team(STRING)
+
+AUTHOR_ORG	- Organization, responsible for maintaining and releasing this
+		  version/release of the Live OS (STRING)
+		  
+AUTHOR_SUBORG	- Subdivision inside AUTHOR_ORG responsible for live os. Must be
+		  used with AUTHOR_ORG(STRING)
+
+COMMENT		- Long string of any additional information or clarifications.
+		  (STRING, MAXLENGTH=65536)
+		   
+LINE5		- Bad joke carried over from the original format used by Ninja
+		  OS tooling. Total line may not be more than 256 characters
+		  (STRING)
+		  
+**CUSTOM**
+
+You may add your own custom keys to this for your own uses with the following
+rules. Custom keys must be uppercase and prefexed with the Underscore(_).
+Variable names will be all UPPERCASE, contain alpha, numbers and the _UNDERSCORE
+ONLY. Such as _CUSTOM. May specifiy type either INT or STRING. Other types may
+not be used.
+		  
+md5/hash sum file structure
+---------------------------
+This is a file with key=pair values that contains checksums for the package. It
+may be used with, or without GPG detached signatures. The main purpose of hash
+sums is to check if the file itself is damaged unintentially through
+transmission errors.
+
+All of these files go in the /hash directory. File is the name of hash algorythm
+being used.
+
+Keys:
+
+**Mandatory**
+
+MAIN_HASH	- hash of the main parition image
+BS_HASH		- hash of the 440 byte MBR bootsector image
+INDEX_HASH	- hash of /liveos_version.conf
+
+**OPTIONAL**
+Ninja OS specific.
+
+LIB_SH_HASH   \ _ Ninja OS's stand alone forge bashscripts
+FORGE_SH_HASH /   included with Ninja OS packaging
+
+These must be present if the scripts are present
+
+File Structure Structure
+------------------------
+
+File structure of inside a .liveos.zip file
+
+/
+-<osname_slug>_bootsector_<version>.img - 440 byte MBR boot sector image.
+-<osname_slug>_<version>.img - main image for the OS. A single partition.
+-liveos_version.conf - index file with package metadata
+-/doc
+ - README
+ - Licesnes and other documentation
+-/gpg - optional. Only use if GPG signing the package.
+ - OSSLUG_pubring.gpg - GPG public keys for use with GPG check, optional, depends
+   on tooling. MUST MATCH SIG/KeyID from CONF_KEYNAME and CONF_KEYSIG
+ - one GPG detached signature per file. if CONFG_KEYNAME and CONFIG_KEYSIG are
+   present, than signatures for the main image, boot sector, liveos_version.conf
+   and everything in /scripts are neccary, everything else optional.
+-/hash - optional, but recommended, especially if not using GPG signatures.
+ - md5 - file with md5 hash sums of contents
+ - <hashname> - shall be any other hash with a *sum uitility shiped with GNU
+   coreutils. To follow the same format as md5.
+-/scripts
+ - Any scripts used for installing or utilty for the OS at hand.
