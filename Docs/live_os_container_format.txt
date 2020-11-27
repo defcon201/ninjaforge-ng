@@ -31,10 +31,11 @@ a max length of 255, and INT shall have a max value of 2^32.
 The following keys are to be valid(VARIABLE TYPE):
 
 **MANDATORY**
-FORMAT_VER	- Format revision of the index file. Version 2 corresponds to
-		  version 1 of this document. All subsequent versions will match
-		  . This is for backwards compatibility with pre-spec versions
-		  of Ninja OS(INT)
+FORMAT_VER	- Format revision of the package spec.
+
+Version 3 : .liveos.zip revsion 1.0. Everything beyond Ninja OS 0.12.2
+Version 2 : Ninja OS 0.11.2 -> 0.12.2
+Version 1 : Ninja OS 0.11.0 -> 0.11.1
 
 OSNAME		- Name of the Operating System contained in the Archive. Should
 		  be in quotes. OSSLUG is generated from this by removing
@@ -72,6 +73,8 @@ If GPG is enabled, then a package is only valid if
 	* Signatures are present in the gpg/ directory for all present files
 	* Signatures are checked to be valid using accepted GPG methods
 	* Signatures are done with GPG key described in GPG variables.
+	* keyring at gpg/package_key.gpg is a valid GPG keyring that contains
+	  exactly one key: the one described above.
 
 **EXTRA**
 Optional part of the spec. Used internally with Ninja OS.
@@ -146,18 +149,23 @@ File structure of inside a .liveos.zip file
 -<osname_slug>_bootsector_<version>.img - 440 byte MBR boot sector image.
 -<osname_slug>_<version>.img - main image for the OS. A single partition.
 -liveos_version.conf - index file with package metadata
--/doc
- - README
+-doc/
+ - doc/README
  - Licesnes and other documentation
--/gpg - optional. Only use if GPG signing the package.
+ 
+-gpg/ - optional. Only use if GPG signing the package.
  - OSSLUG_pubring.gpg - GPG public keys for use with GPG check, optional, depends
    on tooling. MUST MATCH SIG/KeyID from CONF_KEYNAME and CONF_KEYSIG
  - one GPG detached signature per file. if CONFG_KEYNAME and CONFIG_KEYSIG are
    present, than signatures for the main image, boot sector, liveos_version.conf
    and everything in /scripts are neccary, everything else optional.
--/hash - optional, but recommended, especially if not using GPG signatures.
- - md5 - file with md5 hash sums of contents
- - <hashname> - shall be any other hash with a *sum uitility shiped with GNU
+ - gpg/package_key.gpg - Valid GPG keyring with only one key. The one used to
+   sign the package. Manditory if GPG signing is to be used. Must match the
+   signature.
+ 
+-hash/ - optional, but recommended, especially if not using GPG signatures.
+ - hash/md5 - file with md5 hash sums of contents
+ - hash/<hashname> - shall be any other hash with a *sum uitility shiped with GNU
    coreutils. To follow the same format as md5.
--/scripts
+-scripts/
  - Any scripts used for installing or utilty for the OS at hand.
