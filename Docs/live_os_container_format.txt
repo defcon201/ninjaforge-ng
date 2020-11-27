@@ -62,11 +62,10 @@ well.
 
 GPG signatures themselves are optional. 
 
-CONF_KEYNAME	- KeyID of the GPG key used in the signing of this package.
+CONF_KEYSIG	- GPG signature for the key used in signing this package.
 		  (STRING)
 
-CONF_KEYSIG	- Full GPG signature for the key used in signing this package.
-		  (STRING)
+CONF_KEYNAME	- *DEPRECIATED*. This is the last 8 characters of CONF_KEYSIG
 
 If GPG is enabled, then a package is only valid if
 	* The GPG variables are present and match
