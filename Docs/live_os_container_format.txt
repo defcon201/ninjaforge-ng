@@ -152,12 +152,11 @@ File structure of inside a .liveos.zip file
  - doc/README
  - Licesnes and other documentation
  
--gpg/ - optional. Only use if GPG signing the package.
- - OSSLUG_pubring.gpg - GPG public keys for use with GPG check, optional, depends
-   on tooling. MUST MATCH SIG/KeyID from CONF_KEYNAME and CONF_KEYSIG
- - one GPG detached signature per file. if CONFG_KEYNAME and CONFIG_KEYSIG are
-   present, than signatures for the main image, boot sector, liveos_version.conf
-   and everything in /scripts are neccary, everything else optional.
+-gpg/ - Needed CONFI_KEYSIG is used.
+ - one GPG detached signature per file if CONFIG_KEYSIG is present. Signatures
+   for the main image, boot sector, liveos_version.conf and everything in
+   /scripts are neccary, everything else optional. files will be named
+   <filename_of_file_to_check>.sig
  - gpg/package_key.gpg - Valid GPG keyring with only one key. The one used to
    sign the package. Manditory if GPG signing is to be used. Must match the
    signature.
