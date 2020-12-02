@@ -21,7 +21,7 @@ from liveos_common import *
 import sys
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QApplication, QFileDialog
-from PySide2.QtCore import QFile
+from PySide2.QtCore import QFile, QCryptographicHash
 
 options = {
     "valid_package" : False,
@@ -98,15 +98,10 @@ def file_open(filename):
 
     # Optional, but recommended part of the spec:
     try:
-        key_name  = package_index[4]
-        key_sig   = package_index[5]
+        key_sig   = package_index[4]
     except:
-        return
+        key_sig   = None
     
-    if compare_gpg_keysig_keyid(key_sig,key_name):
-        display_key = space_gpg_keysig(key_sig)
-        window.editbox_gpg_sig.setPlainText(display_key)
-
 
 def window_drop(contents):
    print("Drop Event")

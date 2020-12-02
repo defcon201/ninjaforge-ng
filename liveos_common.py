@@ -64,7 +64,7 @@ def package_file_meta(in_file):
     except:
         raise EOFError(invalid_index)
     if 'CONF_KEYNAME' and 'CONF_KEYSIG' in index_values:
-        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYNAME'],index_values['CONF_KEYSIG']
+        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG']
     return output
     
 def package_file_md5(in_file,file_meta):
@@ -124,15 +124,28 @@ def space_gpg_keysig(in_keysig):
     out_keysig = " ".join(split_sig)
     return out_keysig
 
-def check_file_md5(in_hash,file_bytes):
-    '''Check the MD5 hash sum of a file. Takes two arguments, a string with the hash, and the bytes of a file, returns a bool True/False'''
+def check_file_buffer_md5(in_hash,file_bytes):
+    '''Check the MD5 hash sum of a file in a buffer. Takes two arguments, the known hash, and file buffer object. Returns True/False'''
     try:
         file_hash = hashlib.md5(file_bytes).hexdigest()
     except:
         # IDK, raise something here?
         return "ERR","Hash failed"
+    try:
+        byte
     
     if file_hash == in_hash:
         return True
     else:
         return False
+
+def check_file_name_md5(in_hash,file_name):
+    '''Check the MD5 hash of a file, read from the disk. Two arguments, in hash, and file name. Returns True/False'''
+    block_size = 4096 # 4k
+    percent = 0.0
+    out_md5 = hashlib.md5()
+    f = open(file_name,"rb")
+    for byte_block in iter(lambda: f.read(block_size),b""):
+        out_md5.update(byte_block)
+
+    return out_md5
