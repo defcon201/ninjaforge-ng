@@ -63,7 +63,7 @@ def package_file_meta(in_file):
        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE']
     except:
         raise EOFError(invalid_index)
-    if 'CONF_KEYNAME' and 'CONF_KEYSIG' in index_values:
+    if 'CONF_KEYSIG' in index_values:
         output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG']
     return output
     
@@ -138,6 +138,8 @@ def check_file_buffer_md5(in_hash,file_bytes):
         return True
     else:
         return False
+
+def check_gpg_sig(file_meta,key_sig):
 
 def check_file_name_md5(in_hash,file_name):
     '''Check the MD5 hash of a file, read from the disk. Two arguments, in hash, and file name. Returns True/False'''
