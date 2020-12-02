@@ -38,7 +38,7 @@ def proccess_index(in_data):
     return index_values
 
 def package_file_meta(in_file):
-    '''Opens a .liveos.zip and returns a tupple with OS Name, Version, Partition GPG KeyID, GPG full signature, in that order'''
+    '''Opens a .liveos.zip and returns a tupple with OS Name, Version, CPU Arch, Partition Size, GPG signature, in that order'''
     index="liveos_version.conf"
     invalid_package = in_file + " is not a .liveos.zip package file"
     invalid_index = in_file + " index file contains invalid data"
@@ -59,12 +59,13 @@ def package_file_meta(in_file):
 
     # Step 3 - Get key=value pairs from raw data
     index_values = proccess_index(file_raw)
+    if 'CONF_KEYSIG' not in index_values:
+        index_values['CONF_KEYSIG'] = None
     try:
-       output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE']
+        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG']
     except:
         raise EOFError(invalid_index)
-    if 'CONF_KEYSIG' in index_values:
-        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG']
+
     return output
     
 def package_file_md5(in_file,file_meta):
