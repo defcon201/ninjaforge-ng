@@ -174,8 +174,6 @@ def check_file_buffer_md5(in_hash,file_bytes):
     except:
         # IDK, raise something here?
         return "ERR","Hash failed"
-    try:
-        byte
     
     if file_hash == in_hash:
         return True
