@@ -102,7 +102,7 @@ def file_open(filename):
         try:
             gpg_index_valid = check_gpg_index(key_sig,filename)
         except EOFError:
-            update_ui_invalid_package("Invalid GPG Keyring, not loading")
+            window.editbox_forge_action.appendPlainText("* FAIL: Invalid GPG Keyring")
             options.update({"valid_package":False})
             return
         
@@ -113,7 +113,7 @@ def file_open(filename):
             options.update({"valid_package":True})
             window.editbox_forge_action.appendPlainText("* Package Loaded" )
         else:
-            window.editbox_forge_action.appendPlainText("* FAIL. Package GPG key doesn't match index")
+            window.editbox_forge_action.appendPlainText("* FAIL: Package GPG key doesn't match index")
             options.update({"valid_package":False})
     else:
         # Update the valid package flag if we didn't return errors with the
