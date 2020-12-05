@@ -83,11 +83,12 @@ def file_open(filename):
     # package
     # window.button_start.setEnabled(True) # This needs to go later, 
     
-    os_name   = package_index[0]
-    os_ver    = package_index[1]
-    os_arch   = package_index[2]
-    part_size = package_index[3]
-    key_sig   = package_index[4]
+    os_name    = package_index[0]
+    os_ver     = package_index[1]
+    os_arch    = package_index[2]
+    part_size  = package_index[3]
+    key_sig    = package_index[4]
+    format_ver = package_index[5]
     
     # Load OS Name, Version, Parition Size, and System Archecture into window
     window.editbox_os_name.setText(os_name)
@@ -100,7 +101,7 @@ def file_open(filename):
         window.editbox_gpg_sig.setPlainText( space_gpg_keysig(key_sig) )
 
         try:
-            gpg_index_valid = check_gpg_index(key_sig,filename)
+            gpg_index_valid = check_gpg_index(key_sig,filenamem,format_ver)
         except EOFError:
             window.editbox_forge_action.appendPlainText("* FAIL: Invalid GPG Keyring")
             options.update({"valid_package":False})

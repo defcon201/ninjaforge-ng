@@ -40,7 +40,7 @@ def proccess_index(in_data):
     return index_values
 
 def package_file_meta(in_file):
-    '''Opens a .liveos.zip and returns a tupple with OS Name, Version, CPU Arch, Partition Size, GPG signature, in that order'''
+    '''Opens a .liveos.zip and returns a tupple with OS Name, Version, CPU Arch, Partition Size, GPG signature, Format Version, in that order'''
     index="liveos_version.conf"
     invalid_package = in_file + " is not a .liveos.zip package file"
     invalid_index = in_file + " index file contains invalid data"
@@ -63,7 +63,7 @@ def package_file_meta(in_file):
     if 'CONF_KEYSIG' not in index_values:
         index_values['CONF_KEYSIG'] = None
     try:
-        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG']
+        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG'],float(index_values['FORMAT_VER'])
     except:
         raise EOFError(invalid_index)
 
@@ -80,8 +80,11 @@ def package_file_md5(in_file,file_meta):
 
     check_hash_list = ["MAIN_HASH", "BS_HASH", "INDEX_HASH"]
 
-    main_image_file = file_meta['OSSLUG'] +    "_"         + file_meta['OSVERSION']
-    bs_image_file   = file_meta['OSSLUG'] + "_bootsector_" + file_meta['OSVERSION']
+    main_image_file   = file_meta['OSSLUG'] +    "_"         + file_meta['OSVERSION']
+    if file_meta['FORMAT_VER'] >= 3:
+        bs_image_file = file_meta['OSSLUG'] + "_bootsector_" + file_meta['OSVERSION']
+    else:
+        bs_image_file = ninjabootsector + file_meta['OSVERSION'] + ".img"
 
     # Step 1 - Check zip file
     if zipfile.is_zipfile(in_file) != True:
@@ -126,9 +129,12 @@ def space_gpg_keysig(in_keysig):
     out_keysig = " ".join(split_sig)
     return out_keysig
 
-def check_gpg_index(key_sig,file_name):
+def check_gpg_index(key_sig,file_name,format_ver):
     '''Checks if GPG Signature in index file matches keyring, returns True/False'''
-    index           = "gpg/package_key.gpg"
+    if format_ver >= 3:
+        index       = "gpg/package_key.gpg"
+    else:
+        index       = "gpg/ninja_pubring.gpg"
     temp_file       = "/tmp/liveos_keying.gpg"
     invalid_package = file_name + " is not a .liveos.zip package file"
     invalid_keyring = file_name + " GPG keyring file contains invalid data"
