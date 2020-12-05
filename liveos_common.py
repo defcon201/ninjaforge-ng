@@ -6,6 +6,7 @@ Library of common functions for LiveOS forge, mainly for proccessing
 import sys
 import zipfile
 import hashlib
+import gnupg
 
 def proccess_index(in_data):
     '''Takes a binary string from a raw file read of the index, outputs a dictionary of key=value pairs # is the comment character'''
@@ -46,7 +47,6 @@ def package_file_meta(in_file):
     # Step 1 - Check zip file
     if zipfile.is_zipfile(in_file) != True:
         raise EOFError(invalid_package)
-        return
 
     # Step 2 - Extract data and put in an array
     try:
@@ -140,8 +140,44 @@ def check_file_buffer_md5(in_hash,file_bytes):
     else:
         return False
 
-def check_gpg_sig(file_meta,key_sig):
+def check_gpg_index(key_sig,file_name):
+    '''Checks if GPG Signature in index file matches keyring, returns True/False'''
+    index           = "gpg/package_key.gpg"
+    temp_file       = "/tmp/liveos_keying.gpg"
+    invalid_package = in_file + " is not a .liveos.zip package file"
+    invalid_keyring = in_file + " GPG keyring file contains invalid data"
 
+    # Step 1 - Check zip file
+    if zipfile.is_zipfile(in_file) != True:
+        raise EOFError(invalid_package)
+
+    # Step 2 - Extract keyring file. There is no way to load this data
+    # directly into a buffer.
+    try:
+        liveos_package = zipfile.ZipFile(in_file,mode='r')
+        liveos_package.extract(index,path=temp_file)
+    # If the index cannot be read, this is not a valid file
+    except:
+        raise EOFError(invalid_package)
+    
+    # Step 3 - keyring data from the keyring file and then close it.
+    try:
+        gpg     = gnupg.GPG(keyring=temp_file)
+    except:
+        raise EOFError(invalid_keyring)
+    # Get the keyring from the file
+    keyring = gpg.list_keys()
+    liveos_package.close()
+    
+    # Step 4 - check to make sure keyring data matches index.
+    if len(key_ring) != 1:
+        return false
+    
+    if key_ring[0]['fingerprint'] != key_sig:
+        return False
+    else:
+        return True
+        
 def check_file_name_md5(in_hash,file_name):
     '''Check the MD5 hash of a file, read from the disk. Two arguments, in hash, and file name. Returns True/False'''
     block_size = 4096 # 4k

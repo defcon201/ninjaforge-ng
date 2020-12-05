@@ -88,19 +88,36 @@ def file_open(filename):
     os_ver    = package_index[1]
     os_arch   = package_index[2]
     part_size = package_index[3]
+    key_sig   = package_index[4]
     
     # Load OS Name, Version, Parition Size, and System Archecture into window
     window.editbox_os_name.setText(os_name)
     window.editbox_os_version.setText(os_ver)
     window.editbox_os_size.setText(part_size)
     window.editbox_os_arch.setText(os_arch)
-    window.editbox_forge_action.appendPlainText("* Package Loaded" )
+    
+    # Check GPG key against index
+    try:
+        gpg_index_valid = check_gpg_index(key_sig,filename)
+    except:
+        EOFError:
+        update_ui_invalid_package("Invalid GPG Keyring, not loading")
+        options.update({"valid_package":False})
+        return
+
+    if key_sig != None:
+        window.editbox_gpg_sig.setText(key_sig)
+        gpg_index_valid = check_gpg_index(key_sig,filename)
+        if gpg_index_valid == True:
+            window.editbox_forge_action.appendPlainText("* Package Loaded" )
+        else:
+            window.editbox_forge_action.appendPlainText("* FAIL. Package GPG key doesn't match index")
+            options.update({"valid_package":False})
+    else:
+        window.editbox_forge_action.appendPlainText("* Package Loaded" )
 
     # Optional, but recommended part of the spec:
-    try:
-        key_sig   = package_index[4]
-    except:
-        key_sig   = None
+
     
 
 def window_drop(contents):
