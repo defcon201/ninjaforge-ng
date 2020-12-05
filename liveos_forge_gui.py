@@ -81,7 +81,6 @@ def file_open(filename):
 
     # Update the valid package flag if we didn't return errors with the
     # package
-    options.update({"valid_package":True})
     # window.button_start.setEnabled(True) # This needs to go later, 
     
     os_name   = package_index[0]
@@ -97,28 +96,32 @@ def file_open(filename):
     window.editbox_os_arch.setText(os_arch)
     
     # Check GPG key against index
-    try:
-        gpg_index_valid = check_gpg_index(key_sig,filename)
-    except:
-        EOFError:
-        update_ui_invalid_package("Invalid GPG Keyring, not loading")
-        options.update({"valid_package":False})
-        return
-
     if key_sig != None:
         window.editbox_gpg_sig.setText(key_sig)
-        gpg_index_valid = check_gpg_index(key_sig,filename)
+
+        try:
+            gpg_index_valid = check_gpg_index(key_sig,filename)
+        except EOFError:
+            update_ui_invalid_package("Invalid GPG Keyring, not loading")
+            options.update({"valid_package":False})
+            return
+        
         if gpg_index_valid == True:
+            # Update the valid package flag if we didn't return errors with the
+            # package
+            # window.button_start.setEnabled(True) # This needs to go later, 
+            options.update({"valid_package":True})
             window.editbox_forge_action.appendPlainText("* Package Loaded" )
         else:
             window.editbox_forge_action.appendPlainText("* FAIL. Package GPG key doesn't match index")
             options.update({"valid_package":False})
     else:
+        # Update the valid package flag if we didn't return errors with the
+        # package
+        # window.button_start.setEnabled(True) # This needs to go later, 
+        options.update({"valid_package":True})
         window.editbox_forge_action.appendPlainText("* Package Loaded" )
 
-    # Optional, but recommended part of the spec:
-
-    
 
 def window_drop(contents):
    print("Drop Event")
