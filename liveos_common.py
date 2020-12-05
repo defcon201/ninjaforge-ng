@@ -130,11 +130,11 @@ def check_gpg_index(key_sig,file_name):
     '''Checks if GPG Signature in index file matches keyring, returns True/False'''
     index           = "gpg/package_key.gpg"
     temp_file       = "/tmp/liveos_keying.gpg"
-    invalid_package = in_file + " is not a .liveos.zip package file"
-    invalid_keyring = in_file + " GPG keyring file contains invalid data"
+    invalid_package = file_name + " is not a .liveos.zip package file"
+    invalid_keyring = file_name + " GPG keyring file contains invalid data"
 
     # Step 1 - Check zip file
-    if zipfile.is_zipfile(in_file) != True:
+    if zipfile.is_zipfile(file_name) != True:
         raise EOFError(invalid_package)
 
     # Step 2 - Extract keyring file. There is no way to load this data
