@@ -191,4 +191,7 @@ def check_file_name_md5(in_hash,file_name):
     for byte_block in iter(lambda: f.read(block_size),b""):
         out_md5.update(byte_block)
 
-    return out_md5
+    if out_md5 == in_hash:
+        return True
+    else:
+        return False
