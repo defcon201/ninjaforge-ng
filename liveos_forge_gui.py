@@ -97,7 +97,7 @@ def file_open(filename):
     
     # Check GPG key against index
     if key_sig != None:
-        window.editbox_gpg_sig.setText(key_sig)
+        window.editbox_gpg_sig.setPlainText( space_gpg_keysig(key_sig) )
 
         try:
             gpg_index_valid = check_gpg_index(key_sig,filename)
