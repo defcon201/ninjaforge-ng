@@ -122,24 +122,9 @@ def compare_gpg_keysig_keyid(keysig,keyid):
 def space_gpg_keysig(in_keysig):
     '''Take a GPG signature and put a space, every 4 characters.'''
     n = 4
-    split_sig = [in_keysig[i:i+n] for i in range(0, len(in_keysig), n)]
+    split_sig  = [in_keysig[i:i+n] for i in range(0, len(in_keysig), n)]
     out_keysig = " ".join(split_sig)
     return out_keysig
-
-def check_file_buffer_md5(in_hash,file_bytes):
-    '''Check the MD5 hash sum of a file in a buffer. Takes two arguments, the known hash, and file buffer object. Returns True/False'''
-    try:
-        file_hash = hashlib.md5(file_bytes).hexdigest()
-    except:
-        # IDK, raise something here?
-        return "ERR","Hash failed"
-    try:
-        byte
-    
-    if file_hash == in_hash:
-        return True
-    else:
-        return False
 
 def check_gpg_index(key_sig,file_name):
     '''Checks if GPG Signature in index file matches keyring, returns True/False'''
@@ -181,7 +166,22 @@ def check_gpg_index(key_sig,file_name):
         return False
     else:
         return True
-        
+
+def check_file_buffer_md5(in_hash,file_bytes):
+    '''Check the MD5 hash sum of a file in a buffer. Takes two arguments, the known hash, and file buffer object. Returns True/False'''
+    try:
+        file_hash = hashlib.md5(file_bytes).hexdigest()
+    except:
+        # IDK, raise something here?
+        return "ERR","Hash failed"
+    try:
+        byte
+    
+    if file_hash == in_hash:
+        return True
+    else:
+        return False
+                
 def check_file_name_md5(in_hash,file_name):
     '''Check the MD5 hash of a file, read from the disk. Two arguments, in hash, and file name. Returns True/False'''
     block_size = 4096 # 4k
