@@ -91,7 +91,7 @@ def package_file_md5(in_file,file_meta):
     # Step 2 - Extract data and put in an array
     try:
         liveos_package = zipfile.ZipFile(in_file,mode='r')
-        file_raw = liveos_package.read(md5_sums_file)
+        file_raw       = liveos_package.read(md5_sums_file)
         liveos_package.close()
     # If the MD5 file file cannot be read, it is invalid data
     except:
