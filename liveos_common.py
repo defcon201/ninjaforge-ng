@@ -4,6 +4,7 @@ Library of common functions for LiveOS forge, mainly for proccessing
 '''
 
 import sys
+import os
 import zipfile
 import hashlib
 import gnupg
@@ -70,15 +71,15 @@ def package_file_meta(in_file):
     
 def package_file_md5(in_file,file_meta):
     '''Opens a .liveos.zip band returns a dictionary with the key=value pairs from the md5 hashsum file. Takes two variables. Filename of the package, and a dictionary with metadata from the index file'''
+    md5_sums_file   = "hash/md5"
     invalid_package = in_file + " is not a .liveos.zip package file"
-    invalid_md5 = in_file + " MD5 hash sum file contains invalid data"
+    invalid_md5     = in_file + " MD5 hash sum file contains invalid data"
     
-    index_values = {}
-    file_values  = {}
+    index_values    = {}
+    file_values     = {}
 
     check_hash_list = ["MAIN_HASH", "BS_HASH", "INDEX_HASH"]
 
-    md5_sums_file="hash/md5"
     main_image_file = file_meta['OSSLUG'] +    "_"         + file_meta['OSVERSION']
     bs_image_file   = file_meta['OSSLUG'] + "_bootsector_" + file_meta['OSVERSION']
 
@@ -164,14 +165,17 @@ def check_gpg_index(key_sig,file_name):
     try:
         gpg     = gnupg.GPG(keyring=temp_file)
     except:
+        os.remove(temp_file)
         raise EOFError(invalid_keyring)
     # Get the keyring from the file
     keyring = gpg.list_keys()
+
     liveos_package.close()
+    os.remove(temp_file)
     
     # Step 4 - check to make sure keyring data matches index.
     if len(key_ring) != 1:
-        return false
+        return False
     
     if key_ring[0]['fingerprint'] != key_sig:
         return False
