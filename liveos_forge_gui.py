@@ -27,8 +27,11 @@ from PySide2.QtCore import QFile, QCryptographicHash
 # and must be validated by checks, otherwise start will not run.
 package_checks = {
     "valid_package" : False,
-    "valid_target"  : False,
+    "valid_target"  : False
 }
+
+# kept concurent with the target combo box
+target_list = []
 
 def drop_open(filename):
     '''Open a package that is dropped in the window'''
