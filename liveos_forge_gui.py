@@ -101,7 +101,7 @@ def file_open(filename):
         window.editbox_gpg_sig.setPlainText( space_gpg_keysig(key_sig) )
 
         try:
-            gpg_index_valid = check_gpg_index(key_sig,filenamem,format_ver)
+            gpg_index_valid = check_gpg_index(key_sig,filename,format_ver)
         except EOFError:
             window.editbox_forge_action.appendPlainText("* FAIL: Invalid GPG Keyring")
             options.update({"valid_package":False})

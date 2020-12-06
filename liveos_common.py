@@ -4,7 +4,7 @@ Library of common functions for LiveOS forge, mainly for proccessing
 '''
 
 import sys
-import os
+import shutil
 import zipfile
 import hashlib
 import gnupg
@@ -135,7 +135,8 @@ def check_gpg_index(key_sig,file_name,format_ver):
         index       = "gpg/package_key.gpg"
     else:
         index       = "gpg/ninja_pubring.gpg"
-    temp_file       = "/tmp/liveos_keying.gpg"
+    temp_dir        = "/tmp/liveos_zip/"
+    temp_index      = temp_dir + index
     invalid_package = file_name + " is not a .liveos.zip package file"
     invalid_keyring = file_name + " GPG keyring file contains invalid data"
 
@@ -146,29 +147,28 @@ def check_gpg_index(key_sig,file_name,format_ver):
     # Step 2 - Extract keyring file. There is no way to load this data
     # directly into a buffer.
     try:
-        liveos_package = zipfile.ZipFile(in_file,mode='r')
-        liveos_package.extract(index,path=temp_file)
+        liveos_package = zipfile.ZipFile(file_name,mode='r')
+        liveos_package.extract(index,path=temp_dir)
     # If the index cannot be read, this is not a valid file
     except:
         raise EOFError(invalid_package)
     
     # Step 3 - keyring data from the keyring file and then close it.
     try:
-        gpg     = gnupg.GPG(keyring=temp_file)
+        gpg     = gnupg.GPG(keyring=temp_index)
     except:
-        os.remove(temp_file)
+        shutil.rmtree(temp_dir)
         raise EOFError(invalid_keyring)
     # Get the keyring from the file
     keyring = gpg.list_keys()
 
     liveos_package.close()
-    os.remove(temp_file)
-    
+    shutil.rmtree(temp_dir)
     # Step 4 - check to make sure keyring data matches index.
-    if len(key_ring) != 1:
+    if len(keyring) != 1:
         return False
     
-    if key_ring[0]['fingerprint'] != key_sig:
+    if keyring[0]['fingerprint'] != key_sig:
         return False
     else:
         return True
