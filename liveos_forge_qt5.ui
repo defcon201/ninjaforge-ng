@@ -1075,9 +1075,6 @@
    <property name="text">
     <string>Start</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+Return</string>
-   </property>
   </action>
  </widget>
  <tabstops>
