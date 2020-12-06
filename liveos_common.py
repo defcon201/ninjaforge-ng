@@ -69,7 +69,7 @@ def package_file_meta(in_file):
 
     return output
     
-def package_file_md5(in_file,file_meta):
+def package_file_md5(in_file):
     '''Opens a .liveos.zip band returns a dictionary with the key=value pairs from the md5 hashsum file. Takes two variables. Filename of the package, and a dictionary with metadata from the index file'''
     md5_sums_file   = "hash/md5"
     invalid_package = in_file + " is not a .liveos.zip package file"
@@ -78,18 +78,9 @@ def package_file_md5(in_file,file_meta):
     index_values    = {}
     file_values     = {}
 
-    check_hash_list = ["MAIN_HASH", "BS_HASH", "INDEX_HASH"]
-
-    main_image_file   = file_meta['OSSLUG'] +    "_"         + file_meta['OSVERSION']
-    if file_meta['FORMAT_VER'] >= 3:
-        bs_image_file = file_meta['OSSLUG'] + "_bootsector_" + file_meta['OSVERSION']
-    else:
-        bs_image_file = ninjabootsector + file_meta['OSVERSION'] + ".img"
-
     # Step 1 - Check zip file
     if zipfile.is_zipfile(in_file) != True:
         raise EOFError(invalid_package)
-        return
         
     # Step 2 - Extract data and put in an array
     try:
@@ -113,14 +104,6 @@ def package_file_md5(in_file,file_meta):
     
     # Step 5 - Return a dict() with values from the hash file
     return index_values
-        
-def compare_gpg_keysig_keyid(keysig,keyid):
-    '''Checks if a full GPG signature matches a keyid. Takes two parameters, keysig, and keyid, and returns True/False as a bool'''
-    last_bytes = keysig[-8:]
-    if last_bytes == keyid:
-        return True
-    else:
-        return False
 
 def space_gpg_keysig(in_keysig):
     '''Take a GPG signature and put a space, every 4 characters.'''
@@ -164,10 +147,11 @@ def check_gpg_index(key_sig,file_name,format_ver):
 
     liveos_package.close()
     shutil.rmtree(temp_dir)
-    # Step 4 - check to make sure keyring data matches index.
+    ## Step 4 - check to make sure keyring data matches index.
+    # There should only be ONE key. If not, fail
     if len(keyring) != 1:
         return False
-    
+    # get fingerprint of first key. check against key from index file
     if keyring[0]['fingerprint'] != key_sig:
         return False
     else:
