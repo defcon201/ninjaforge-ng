@@ -105,6 +105,7 @@ def package_file_md5(in_file):
     # Step 5 - Return a dict() with values from the hash file
     return index_values
 
+
 def space_gpg_keysig(in_keysig):
     '''Take a GPG signature and put a space, every 4 characters.'''
     n = 4

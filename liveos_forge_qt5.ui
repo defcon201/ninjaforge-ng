@@ -66,7 +66,16 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetFixedSize</enum>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>4</number>
+     </property>
+     <property name="topMargin">
+      <number>4</number>
+     </property>
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
+     <property name="bottomMargin">
       <number>4</number>
      </property>
      <item>
@@ -103,8 +112,7 @@
        </property>
        <property name="icon">
         <iconset theme="fileopen">
-         <normaloff/>
-        </iconset>
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -148,8 +156,7 @@
        </property>
        <property name="icon">
         <iconset theme="reload">
-         <normaloff/>
-        </iconset>
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -199,8 +206,7 @@
        </property>
        <property name="icon">
         <iconset theme="edit-clear">
-         <normaloff/>
-        </iconset>
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -244,8 +250,7 @@
        </property>
        <property name="icon">
         <iconset theme="application-exit">
-         <normaloff/>
-        </iconset>
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -589,7 +594,7 @@
       <property name="plainText">
        <string/>
       </property>
-      <property name="placeholderText" stdset="0">
+      <property name="placeholderText">
        <string>*Blank*</string>
       </property>
      </widget>
@@ -711,7 +716,7 @@
       <property name="editable">
        <bool>true</bool>
       </property>
-      <property name="currentText" stdset="0">
+      <property name="currentText">
        <string comment="0"/>
       </property>
      </widget>
@@ -730,14 +735,14 @@
       <property name="mouseTracking">
        <bool>false</bool>
       </property>
+      <property name="tabletTracking">
+       <bool>false</bool>
+      </property>
       <property name="toolTip">
        <string>Poll System for Available Drives</string>
       </property>
       <property name="text">
        <string>&amp;Refresh</string>
-      </property>
-      <property name="tabletTracking" stdset="0">
-       <bool>false</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkbox_format">
@@ -891,7 +896,7 @@
       <property name="plainText">
        <string/>
       </property>
-      <property name="placeholderText" stdset="0">
+      <property name="placeholderText">
        <string>*Status Update Text*</string>
       </property>
      </widget>
@@ -954,7 +959,8 @@
       <string>&amp;Start</string>
      </property>
      <property name="icon">
-      <iconset theme="media-playback-start"/>
+      <iconset theme="media-playback-start">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -1059,6 +1065,11 @@
     <string>F5</string>
    </property>
   </action>
+  <action name="action_start">
+   <property name="text">
+    <string>Start</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>tool_button_open</tabstop>
@@ -1076,22 +1087,6 @@
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>action_Exit</sender>
-   <signal>triggered()</signal>
-   <receiver>forge_window_main</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>319</x>
-     <y>159</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>tool_button_exit</sender>
    <signal>clicked()</signal>
@@ -1169,6 +1164,38 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_start</sender>
+   <signal>clicked()</signal>
+   <receiver>action_start</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>732</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_Exit</sender>
+   <signal>triggered()</signal>
+   <receiver>forge_window_main</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>219</y>
     </hint>
    </hints>
   </connection>
