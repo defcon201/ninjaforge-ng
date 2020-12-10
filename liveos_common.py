@@ -8,6 +8,7 @@ import shutil
 import zipfile
 import hashlib
 import gnupg
+import tempfile
 
 def proccess_index(in_data):
     '''Takes a binary string from a raw file read of the index, outputs a dictionary of key=value pairs # is the comment character'''
@@ -119,11 +120,10 @@ def check_gpg_index(key_sig,file_name,format_ver):
         index       = "gpg/package_key.gpg"
     else:
         index       = "gpg/ninja_pubring.gpg"
-    temp_dir        = "/tmp/liveos_zip/"
-    temp_index      = temp_dir + index
+    temp_dir        = tempfile.mkdtemp()
+    temp_index      = temp_dir + "/" + index
     invalid_package = file_name + " is not a .liveos.zip package file"
     invalid_keyring = file_name + " GPG keyring file contains invalid data"
-
     # Step 1 - Check zip file
     if zipfile.is_zipfile(file_name) != True:
         raise EOFError(invalid_package)
@@ -145,7 +145,7 @@ def check_gpg_index(key_sig,file_name,format_ver):
         raise EOFError(invalid_keyring)
     # Get the keyring from the file
     keyring = gpg.list_keys()
-
+    
     liveos_package.close()
     shutil.rmtree(temp_dir)
     ## Step 4 - check to make sure keyring data matches index.
