@@ -55,28 +55,28 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>641</width>
+      <width>791</width>
       <height>91</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="menu_layout_box" stretch="0,0,0,0">
      <property name="spacing">
-      <number>4</number>
+      <number>5</number>
      </property>
      <property name="sizeConstraint">
       <enum>QLayout::SetFixedSize</enum>
      </property>
      <property name="leftMargin">
-      <number>4</number>
+      <number>5</number>
      </property>
      <property name="topMargin">
-      <number>4</number>
+      <number>5</number>
      </property>
      <property name="rightMargin">
-      <number>4</number>
+      <number>5</number>
      </property>
      <property name="bottomMargin">
-      <number>4</number>
+      <number>5</number>
      </property>
      <item>
       <widget class="QToolButton" name="tool_button_open">
@@ -126,7 +126,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="tool_button_reload">
+      <widget class="QToolButton" name="tool_button_refresh">
        <property name="minimumSize">
         <size>
          <width>96</width>
@@ -145,6 +145,11 @@
          <height>76</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="cursor">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
@@ -152,10 +157,10 @@
         <string>Reload Current LiveOS Package</string>
        </property>
        <property name="text">
-        <string extracomment="Exit">R&amp;eload File</string>
+        <string extracomment="Refresh Drives List">&amp;ReFresh</string>
        </property>
        <property name="icon">
-        <iconset theme="reload">
+        <iconset theme="view-refresh">
          <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
@@ -199,10 +204,10 @@
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="toolTip">
-        <string>Close Current .liveos.zip file</string>
+        <string>Clear Loaded Package</string>
        </property>
        <property name="text">
-        <string>&amp;Clear</string>
+        <string extracomment="Clear Loaded Package">&amp;Clear</string>
        </property>
        <property name="icon">
         <iconset theme="edit-clear">
@@ -697,7 +702,7 @@
        <rect>
         <x>60</x>
         <y>10</y>
-        <width>245</width>
+        <width>310</width>
         <height>30</height>
        </rect>
       </property>
@@ -718,31 +723,6 @@
       </property>
       <property name="currentText">
        <string comment="0"/>
-      </property>
-     </widget>
-     <widget class="QToolButton" name="button_refresh_drives">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>10</y>
-        <width>65</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="cursor">
-       <cursorShape>PointingHandCursor</cursorShape>
-      </property>
-      <property name="mouseTracking">
-       <bool>false</bool>
-      </property>
-      <property name="tabletTracking">
-       <bool>false</bool>
-      </property>
-      <property name="toolTip">
-       <string>Poll System for Available Drives</string>
-      </property>
-      <property name="text">
-       <string>&amp;Refresh</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkbox_format">
@@ -1013,8 +993,10 @@
     <property name="title">
      <string>Actio&amp;ns</string>
     </property>
-    <addaction name="action_Reload_Package"/>
     <addaction name="action_Refresh_Drives"/>
+    <addaction name="action_Reload_Package"/>
+    <addaction name="separator"/>
+    <addaction name="action_Start"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -1060,7 +1042,7 @@
     <string>Refresh &amp;Drives</string>
    </property>
    <property name="shortcut">
-    <string>Shift+F5</string>
+    <string>F5</string>
    </property>
   </action>
   <action name="action_Reload_Package">
@@ -1068,23 +1050,21 @@
     <string>Reload &amp;File</string>
    </property>
    <property name="shortcut">
-    <string>F5</string>
+    <string>Shift+F5</string>
    </property>
   </action>
-  <action name="action_start">
+  <action name="action_Start">
    <property name="text">
-    <string>Start</string>
+    <string>&amp;Start</string>
    </property>
   </action>
  </widget>
  <tabstops>
   <tabstop>tool_button_open</tabstop>
-  <tabstop>tool_button_reload</tabstop>
+  <tabstop>tool_button_refresh</tabstop>
   <tabstop>tool_button_clear</tabstop>
   <tabstop>tool_button_exit</tabstop>
-  <tabstop>editbox_input_file</tabstop>
   <tabstop>combobox_drive_selection</tabstop>
-  <tabstop>button_refresh_drives</tabstop>
   <tabstop>checkbox_format</tabstop>
   <tabstop>checkbox_write_to_media</tabstop>
   <tabstop>checkbox_verify_gpg</tabstop>
@@ -1142,46 +1122,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>button_refresh_drives</sender>
+   <sender>tool_button_refresh</sender>
    <signal>clicked()</signal>
    <receiver>action_Refresh_Drives</receiver>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>637</x>
-     <y>148</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tool_button_reload</sender>
-   <signal>clicked()</signal>
-   <receiver>action_Reload_Package</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>245</x>
+     <x>317</x>
      <y>68</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>button_start</sender>
-   <signal>clicked()</signal>
-   <receiver>action_start</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>732</x>
-     <y>383</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1202,6 +1150,22 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_start</sender>
+   <signal>clicked()</signal>
+   <receiver>action_Start</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>732</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

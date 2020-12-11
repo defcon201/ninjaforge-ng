@@ -151,7 +151,13 @@ def populate_options():
     options['target_select']  = window.combobox_drive_selection.currentIndex()
     
     return options
-    
+
+def action_reload():
+    '''This is what happens when the you hit the reload button'''
+
+    settings = populate_options()
+    file_open(settings['in_file'])
+   
 def action_start():
     '''This is what happens when you hit the Start button'''
 
@@ -162,7 +168,6 @@ def action_start():
 
     # Step 2 - Check settings
     settings = populate_options()
-    print(settings) #DEBUG
     
     # Step 3 - Manifest Check. Ensure all files are present
     check_opts = []
@@ -174,6 +179,8 @@ def action_start():
     if manifest_ok != True:
         window.editbox_forge_action.appendPlainText("* Files are missing from package, Stopping!")
         return
+        
+    print(settings) #DEBUG
     
 def open_about_window():
     '''opens the about window'''
@@ -201,9 +208,10 @@ def main():
     
     #button presses
     window.action_Open.triggered.connect(file_open_dialog)
+    window.action_Reload_Package.triggered.connect(action_reload)
     window.action_Clear.triggered.connect(clear_action)
     window.action_About.triggered.connect(open_about_window)
-    window.action_start.triggered.connect(action_start)
+    window.action_Start.triggered.connect(action_start)
     #window.forge_main_widget.(drop_open)
     
     window.show()
