@@ -130,7 +130,7 @@ def file_open(filename):
 
 
 def window_drop(contents):
-   '''debug function, remove before going live'''
+   '''DEBUG function, remove before going live'''
    print("Drop Event")
    print(contents)
    
