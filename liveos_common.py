@@ -10,6 +10,14 @@ import hashlib
 import gnupg
 import tempfile
 
+def slugify(in_text):
+    '''return a slug. Remove spaces, and lowercase'''
+    out_text = in_text.strip()
+    out_text = out_text.lower()
+    out_text = out_text.replace(" ","")
+    
+    return out_text
+
 def proccess_index(in_data):
     '''Takes a binary string from a raw file read of the index, outputs a dictionary of key=value pairs # is the comment character'''
     index_values = {}
@@ -61,10 +69,12 @@ def package_file_meta(in_file):
 
     # Step 3 - Get key=value pairs from raw data
     index_values = proccess_index(file_raw)
+    #Generate slug from name. lowercase and remove spaces
+    index_values['OSSLUG'] = slugify( index_values['OSNAME'] )
     if 'CONF_KEYSIG' not in index_values:
         index_values['CONF_KEYSIG'] = None
     
-    wanted_str   = ['OSNAME', 'OSVERSION','OSARCH','PART_SIZE', 'CONF_KEYSIG']
+    wanted_str   = ['OSNAME', 'OSSLUG', 'OSVERSION','OSARCH','PART_SIZE', 'CONF_KEYSIG']
     wanted_float = ['FORMAT_VER']
     wanted_int   = []
     output       = {}
@@ -79,6 +89,55 @@ def package_file_meta(in_file):
         raise EOFError(invalid_index)
 
     return output
+    
+def check_manifest(in_file,options=[]):
+    '''Check .liveos.zip package to ensure files are present as per spec. Options should be a list of strings. valid options are gpg and md5'''
+
+    # Step 1 - Get Meta from package and set filenames
+    file_meta       = package_file_meta(in_file)
+    index           = "liveos_version.conf"
+    main_image_file = file_meta['OSSLUG'] + "_" + file_meta['OSVERSION'] + ".img"
+    if file_meta['FORMAT_VER'] >= 3:
+        bootsector_file = file_meta['OSSLUG']  + "_bootsector_" + file_meta['OSVERSION'] + ".img"
+        gpg_keyring     = "gpg/package_key.gpg"
+    else:
+        bootsector_file = "ninjabootsector" + file_meta['OSVERSION'] + ".img"
+        gpg_keyring     = "gpg/ninja_pubring.gpg"
+
+
+    # Step 2 - get list of files
+    liveos_package = zipfile.ZipFile(in_file,mode='r')
+    file_list      = liveos_package.namelist()
+    liveos_package.close()
+    
+    # Check base files.
+    if index not in file_list:
+        return False
+    if main_image_file not in file_list:
+        return False
+    if bootsector_file not in file_list:
+        return False
+    
+    # Check MD5 hashsum file
+    if "md5" in options:
+        if "hash/md5" not in file_list:
+            return False
+            
+    # Check GPG signatures
+    if "gpg" in options:
+        index_sig      = "gpg/" + index + ".sig"
+        main_image_sig = "gpg/" + main_image_file + ".sig"
+        bootsector_sig = "gpg/" + bootsector_file + ".sig"
+        if gpg_keyring not in file_list:
+            return False
+        if index_sig not in file_list:
+            return False
+        if main_image_sig not in file_list:
+            return False
+        if bootsector_sig not in file_list:
+            return False
+    # If nothing fails, return True
+    return True
     
 def package_file_md5(in_file):
     '''Opens a .liveos.zip band returns a dictionary with the key=value pairs from the md5 hashsum file. Takes two variables. Filename of the package, and a dictionary with metadata from the index file'''

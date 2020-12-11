@@ -84,7 +84,6 @@ def file_open(filename):
         package_checks.update({"valid_package":False})
         return
 
-    
     # Load OS Name, Version, Parition Size, and System Archecture into window
     window.editbox_os_name.setText(file_meta['OSNAME'])
     window.editbox_os_version.setText(file_meta['OSVERSION'])
@@ -158,16 +157,26 @@ def populate_options():
 def action_start():
     '''This is what happens when you hit the Start button'''
 
-    # Step 1, check to see if we have a valid package. If not, Stop.
+    # Step 1 - check to see if we have a valid package. If not, Stop.
     if package_checks['valid_package'] != True:
         window.editbox_forge_action.appendPlainText("* No Valid Package Loaded!")
         return
 
     # Step 2 - Check settings
     settings = populate_options()
-
     print(settings) #DEBUG
-
+    
+    # Step 3 - Manifest Check. Ensure all files are present
+    check_opts = []
+    if settings["check_gpg"] == True:
+        check_opts.append("gpg")
+    if settings["check_md5"] == True:
+        check_opts.append("md5")
+    manifest_ok = check_manifest(settings['in_file'],check_opts)
+    if manifest_ok != True:
+        window.editbox_forge_action.appendPlainText("* Files are missing from package, Stopping!")
+        return
+    
 def open_about_window():
     '''opens the about window'''
     about_window.show()
