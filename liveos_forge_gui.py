@@ -78,35 +78,25 @@ def file_open(filename):
 
     # Throw an error if invalid metadata is given
     try:
-        package_index = package_file_meta(filename)
+        file_meta = package_file_meta(filename)
     except EOFError:
         update_ui_invalid_package("Can't parse .liveos.zip index, invalid package")
         package_checks.update({"valid_package":False})
         return
 
-    # Update the valid package flag if we didn't return errors with the
-    # package
-    # window.button_start.setEnabled(True) # This needs to go later, 
-    
-    os_name    = package_index[0]
-    os_ver     = package_index[1]
-    os_arch    = package_index[2]
-    part_size  = package_index[3]
-    key_sig    = package_index[4]
-    format_ver = package_index[5]
     
     # Load OS Name, Version, Parition Size, and System Archecture into window
-    window.editbox_os_name.setText(os_name)
-    window.editbox_os_version.setText(os_ver)
-    window.editbox_os_size.setText(part_size)
-    window.editbox_os_arch.setText(os_arch)
+    window.editbox_os_name.setText(file_meta['OSNAME'])
+    window.editbox_os_version.setText(file_meta['OSVERSION'])
+    window.editbox_os_size.setText(file_meta['PART_SIZE'])
+    window.editbox_os_arch.setText(file_meta['OSARCH'])
     
     # Check GPG key against index
-    if key_sig != None:
-        window.editbox_gpg_sig.setPlainText( space_gpg_keysig(key_sig) )
+    if file_meta['CONF_KEYSIG'] != None:
+        window.editbox_gpg_sig.setPlainText( space_gpg_keysig(file_meta['CONF_KEYSIG']) )
 
         try:
-            gpg_index_valid = check_gpg_index(key_sig,filename,format_ver)
+            gpg_index_valid = check_gpg_index(file_meta['CONF_KEYSIG'],filename,file_meta['FORMAT_VER'])
         except EOFError:
             window.editbox_forge_action.appendPlainText("* FAIL: Invalid GPG Keyring")
             package_checks.update({"valid_package":False})

@@ -63,8 +63,18 @@ def package_file_meta(in_file):
     index_values = proccess_index(file_raw)
     if 'CONF_KEYSIG' not in index_values:
         index_values['CONF_KEYSIG'] = None
+    
+    wanted_str   = ['OSNAME', 'OSVERSION','OSARCH','PART_SIZE', 'CONF_KEYSIG']
+    wanted_float = ['FORMAT_VER']
+    wanted_int   = []
+    output       = {}
     try:
-        output = index_values['OSNAME'],index_values['OSVERSION'],index_values['OSARCH'],index_values['PART_SIZE'],index_values['CONF_KEYSIG'],float(index_values['FORMAT_VER'])
+        for item in wanted_str:
+            output[item] = str(index_values[item])
+        for item in wanted_float:
+            output[item] = float(index_values[item])
+        for item in wanted_int:
+            output[item] = int(index_values[item])
     except:
         raise EOFError(invalid_index)
 
