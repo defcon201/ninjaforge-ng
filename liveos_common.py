@@ -27,7 +27,7 @@ def proccess_index(in_data):
     in_data = in_data.strip("\'")
     
     # Split file into lines, and strip comments
-    raw_lines = in_data.split('\\n')    
+    raw_lines  = in_data.split('\\n')    
     file_lines = []
     for line in raw_lines:
         li=line.strip()
@@ -50,9 +50,9 @@ def proccess_index(in_data):
 
 def package_file_meta(in_file):
     '''Opens a .liveos.zip and returns a tupple with OS Name, Version, CPU Arch, Partition Size, GPG signature, Format Version, in that order'''
-    index="liveos_version.conf"
+    index           = "liveos_version.conf"
     invalid_package = in_file + " is not a .liveos.zip package file"
-    invalid_index = in_file + " index file contains invalid data"
+    invalid_index   = in_file + " index file contains invalid data"
 
     # Step 1 - Check zip file
     if zipfile.is_zipfile(in_file) != True:
@@ -61,7 +61,7 @@ def package_file_meta(in_file):
     # Step 2 - Extract data and put in an array
     try:
         liveos_package = zipfile.ZipFile(in_file,mode='r')
-        file_raw = liveos_package.read(index)
+        file_raw       = liveos_package.read(index)
         liveos_package.close()
     # If the index cannot be read, this is not a valid file
     except:

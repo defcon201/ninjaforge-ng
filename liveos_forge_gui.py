@@ -125,9 +125,7 @@ def window_drop(contents):
    
 def check_md5_sums(file_name,file_meta,file_hashes):
     '''check .liveos.zip hash sums, main image, boot sector, and package image'''
-
-    check_hash_list = ["MAIN_HASH", "BS_HASH", "INDEX_HASH"]
-
+    check_hash_list   = ["MAIN_HASH", "BS_HASH", "INDEX_HASH"]
     main_image_file   = file_meta['OSSLUG'] +    "_"         + file_meta['OSVERSION']
     if file_meta['FORMAT_VER'] >= 3:
         bs_image_file = file_meta['OSSLUG'] + "_bootsector_" + file_meta['OSVERSION']
