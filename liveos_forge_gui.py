@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-liveos_forge_about='''LiveOS Forge
---------------
-This is an app that reads from .liveos.zip packages and burns them to
-USB sticks or other media. It can also check GPG signatures and hashes
-as part of the spec to ensure the integrity of the data.
+
+forge_gui_meta = {
+  'name'    : "Ninja Forge",
+  'version' : "0.0.0"
+}
+
+liveos_forge_about='''
+Ninja Forge reads from .liveos.zip packages and burns them to USB sticks
+orother media. It can also check GPG signatures and hashesas part of the
+spec to ensure the integrity of the data.
 
 The format, and this package where started by the Ninja OS team to
 address the shortcommings in existing distribution models for USB stick
@@ -16,7 +21,59 @@ Framework. This will eventually replace existing Clone and Forge with
 updated python scripts.
 
 This is the GUI version. There will be a match CLI version in the future
+
+USAGE
+=====
+Open the package liveos.zip package using the open button or shortcut.
+
+If the package is not a valid package, this will throw an error. If a
+GPG Signature is specified in the metadata, then it will check for a
+keyring. If one is not found, or it doesn't contain specificly one key
+matching the signature in the metadata, it will throw an error. It
+will also check for the presence of a hash sum file, if enabled and
+throw an error if not found. Other than this, it will do a basic
+manifest check of the zip file to ensure the expected files are present.
+If not, it will throw an error, and you will be unable to procede.
+
+Once a valid package is loaded, select a target and options and press
+start. Action will depend on options checked.
+
+Target
+------
+
+If "Format" is selected in the options, pick a block device, and use the
+entire device. If it is NOT selected. Pick an existing parition of a
+block device. See Below
+
+Options:
+--------
+Format - This will parition the USB stick. The first partition will be
+Parition Size as displayed on the column on the left, and the second,
+the remainder of the drive.
+
+Write to Media - Write images to media. If this is unchecked, the tool
+can be used to format the drive, or simply just check the validity of
+package without writing.
+
+Check GPG Sig - Checks GPG signatures of package. uses internal keyring,
+checked against "GPG Signature". Please verify that this signature
+matches that known to be of the author of the OS in question.
+
+Check Hash Sum - At current, checks stored MD5 sum hashes of shipped
+files to verify they are uncorrupted. This is used as an alternative
+to GPG, that can check against transmission/storage issues, but NOT
+security threats.
+
+Start Button
+-------------
+Will do the actions checked, starting with hash and GPG checks.
+
+
+TIP - Uncheck "Format" and "Write to Media" to verify the intergrity of
+the package. Nothing will be written.
 '''
+liveos_forge_about = liveos_forge_about.strip()
+
 from liveos_common import *
 import sys
 from PySide2.QtUiTools import QUiLoader
@@ -184,6 +241,9 @@ def action_start():
     
 def open_about_window():
     '''opens the about window'''
+    about_window.label_name.setText(forge_gui_meta["name"])
+    about_window.label_version.setText(forge_gui_meta["version"])
+    about_window.editbox_about.setPlainText(liveos_forge_about)
     about_window.show()
 
 def main():
@@ -204,7 +264,6 @@ def main():
     global about_window
     about_window = loader.load(about_ui_file)
     about_ui_file.close()
-    about_window.editbox_about.setPlainText(liveos_forge_about)
     
     #button presses
     window.action_Open.triggered.connect(file_open_dialog)
@@ -212,7 +271,7 @@ def main():
     window.action_Clear.triggered.connect(clear_action)
     window.action_About.triggered.connect(open_about_window)
     window.action_Start.triggered.connect(action_start)
-    #window.forge_main_widget.(drop_open)
+    #window.forge_main_widget.(drop_open) #TODO: figure out Qt5 drop Mechanics
     
     window.show()
     sys.exit(app.exec_())

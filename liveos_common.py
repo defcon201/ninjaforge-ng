@@ -2,7 +2,10 @@
 Library of common functions for LiveOS forge, mainly for proccessing
 .liveos.zip files
 '''
-
+forge_lib_meta = {
+  'name'    : "Ninja Forge",
+  'version' : "0.0.0"
+}
 import sys
 import shutil
 import zipfile
