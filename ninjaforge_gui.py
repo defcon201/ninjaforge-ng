@@ -6,6 +6,8 @@ forge_gui_meta = {
 }
 
 ninjaforge_about='''
+This is the GUI Version of Ninja Forge.
+
 Ninja Forge reads from .liveos.zip packages and burns them to USB sticks
 orother media. It can also check GPG signatures and hashesas part of the
 spec to ensure the integrity of the data.
@@ -19,8 +21,6 @@ size, and a image of the bootloader, prefrably one pulled form a working
 live sytem as a clone. This works with existing Ninja OS Clone and Forge
 Framework. This will eventually replace existing Clone and Forge with
 updated python scripts.
-
-This is the GUI version. There will be a match CLI version in the future
 
 USAGE
 =====
@@ -304,4 +304,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
