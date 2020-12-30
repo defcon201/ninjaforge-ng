@@ -5,7 +5,7 @@ forge_gui_meta = {
   'version' : "0.0.0"
 }
 
-liveos_forge_about='''
+ninjaforge_about='''
 Ninja Forge reads from .liveos.zip packages and burns them to USB sticks
 orother media. It can also check GPG signatures and hashesas part of the
 spec to ensure the integrity of the data.
@@ -72,9 +72,9 @@ Will do the actions checked, starting with hash and GPG checks.
 TIP - Uncheck "Format" and "Write to Media" to verify the intergrity of
 the package. Nothing will be written.
 '''
-liveos_forge_about = liveos_forge_about.strip()
+ninjaforge_about = ninjaforge_about.strip()
 
-from liveos_common import *
+from ninjaforge_common import *
 import sys
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QApplication, QFileDialog
@@ -218,17 +218,17 @@ def action_reload():
 def populate_target_box():
     '''Function for loading/reloading target combo box'''
     option = None
-    
+
+    # If "format" is checked, select drives, if not, select partitions
     if window.checkbox_format.checkState():
         option = "drive"
     else:
         option = "partition"
-    
+
     # Clear list at start
     window.combobox_drive_selection.clear()
     # Get list of drives
     target_list = get_drive_list(option)
-    
     line = ""
     for item in target_list:
         line = "\t".join(item)
@@ -262,14 +262,14 @@ def open_about_window():
     '''opens the about window'''
     about_window.label_name.setText(forge_gui_meta["name"])
     about_window.label_version.setText(forge_gui_meta["version"])
-    about_window.editbox_about.setPlainText(liveos_forge_about)
+    about_window.editbox_about.setPlainText(ninjaforge_about)
     about_window.show()
 
 def main():
     
     app = QApplication(sys.argv)
 
-    ui_file = QFile("liveos_forge_qt5.ui")
+    ui_file = QFile("ninjaforge_qt5.ui")
     ui_file.open(QFile.ReadOnly)
 
     loader = QUiLoader()
@@ -277,7 +277,7 @@ def main():
     window = loader.load(ui_file)
     ui_file.close()
     
-    about_ui_file = QFile("liveos_forge_about.ui")
+    about_ui_file = QFile("ninjaforge_about.ui")
     about_ui_file.open(QFile.ReadOnly)
     loader = QUiLoader()
     global about_window
