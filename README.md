@@ -2,7 +2,9 @@
 
 Enhanced re-write of ninjaforge.sh in python. WORK IN PROGRESS.
 
-Not yet complete
+NOTE: Versioning code structures have been added. It is not far enough to start
+with semantic versioning, and shall be at version 0.0.0 as a placeholder until
+such time there is
 
 Ninja Forge was the half of the clone and forge frame work. Forge re-constitutes
 previously made Ninja OS packages, both ones that use the .liveos.zip packages.
@@ -26,13 +28,13 @@ notable files:
 
 Python Library
 -------
-liveos_common.py
+ninjaos_common.py
 
 Forge GUI
 ---------
-liveos\_forge\_gui.py
-liveos\_forge\_qt5.ui
-liveos\_forge\_about.ui
+ninjaforge\_gui.py
+ninjaforge\_qt5.ui
+ninjaforge\_about.ui
 
 Forge CLI
 ---------
