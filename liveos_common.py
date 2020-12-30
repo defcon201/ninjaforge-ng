@@ -161,16 +161,24 @@ def get_drive_list(option):
         raise EnvironmentError("windoze not supported yet: TODO: FIGURE THIS SHIT OUT!")
 
     elif 'linux' in sys.platform:
-        list_drives_cmd  = "lsblk -J"
+        list_drives_cmd  = "lsblk -J" # -J is for JSON. We can then snarf it later
         list_drives      = subprocess.Popen(list_drives_cmd, shell=True, stdout=subprocess.PIPE)
         drive_table, err = list_drives.communicate()
         drive_table      = byte2str(drive_table)
         drive_table      = drive_table.replace('\\n','\n')
         drive_table      = json.loads(drive_table)
+        # Drive table is a big python dict{} generated from JSON output
+        # Generated from lsblk above. Giant lookup table of all drive and
+        # partition information see lsblk for more info
     else:
        #TODO: Apple OSX support
        raise EnvironmentError(sys.platform + ": OS Not supported...yet")
         
+    # Parse though the drive_table object. We are looking for not mounted
+    # partitions, that have no child objects, i.e. RAID, lvm, or crypto
+    # This should help prevent nuking system partitions. Drive checks
+    # ALL partitions on the disk. They all have to be unmounted. partition
+    # only checks invidual partitions.
     if option == "drive":
         parts_check = {}
         for drive in drive_table['blockdevices']:
