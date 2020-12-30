@@ -150,7 +150,7 @@ def check_manifest(in_file,options=[]):
     return True
     
 def get_drive_list(option):
-    '''Get list of drives that are usable. option is either drive or partition'''
+    '''Get list of drives that are usable. option is either drive or partition. returns a tupple of device,size,[label]'''
     out_list   = []
 
     if 'win' in sys.platform:
@@ -161,15 +161,14 @@ def get_drive_list(option):
         raise EnvironmentError("windoze not supported yet: TODO: FIGURE THIS SHIT OUT!")
 
     elif 'linux' in sys.platform:
-        list_drives_cmd  = "lsblk -J" # -J is for JSON. We can then snarf it later
+        list_drives_cmd  = "lsblk -J -o +LABEL" # -J is for JSON. We can then snarf it later
         list_drives      = subprocess.Popen(list_drives_cmd, shell=True, stdout=subprocess.PIPE)
         drive_table, err = list_drives.communicate()
         drive_table      = byte2str(drive_table)
         drive_table      = drive_table.replace('\\n','\n')
         drive_table      = json.loads(drive_table)
-        # Drive table is a big python dict{} generated from JSON output
-        # Generated from lsblk above. Giant lookup table of all drive and
-        # partition information see lsblk for more info
+        # Drive table is a python dict{} lookup table of all drive and
+        # partition information from lsblk
     else:
        #TODO: Apple OSX support
        raise EnvironmentError(sys.platform + ": OS Not supported...yet")
@@ -189,14 +188,14 @@ def get_drive_list(option):
                 parts_check.add(part['mountpoint'])
             if parts_check != { None }:
                 continue
-            out_list.append("/dev/" + drive['name'])
+            out_list.append( ("/dev/" + drive['name'],drive['size']) )
     elif option == "partition":
         for drive in drive_table['blockdevices']:
             for part in drive['children']:
                 if 'children' in part.keys():
                     break
                 if part['mountpoint'] == None:
-                    out_list.append("/dev/" + part['name'])
+                    out_list.append( ("/dev/" + part['name'],part['size'],part['label']) )
     else:
         raise KeyError('Option must be either drive or partition')
         
