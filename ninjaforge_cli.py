@@ -29,8 +29,8 @@ against that of the metadata index. If they don't match, the check fails
 Targets: If you are partitioning the drive with --format, use the entire
 drive, i.e. /dev/sdX. If you are NOT using this option, use the parition
 i.e. /dev/sdXN, i.e. /dev/sdd vs /dev/sdd1
-
 '''
+ninjaforge_about = ninjaforge_about.strip()
 
 import argparse
 
