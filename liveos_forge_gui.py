@@ -214,6 +214,25 @@ def action_reload():
 
     settings = populate_options()
     file_open(settings['in_file'])
+
+def populate_target_box():
+    '''Function for loading/reloading target combo box'''
+    option = None
+    
+    if window.checkbox_format.checkState():
+        option = "drive"
+    else:
+        option = "partition"
+    
+    # Clear list at start
+    window.combobox_drive_selection.clear()
+    # Get list of drives
+    target_list = get_drive_list(option)
+    
+    line = ""
+    for item in target_list:
+        line = "\t".join(item)
+        window.combobox_drive_selection.addItem(line)
    
 def action_start():
     '''This is what happens when you hit the Start button'''
@@ -268,10 +287,17 @@ def main():
     #button presses
     window.action_Open.triggered.connect(file_open_dialog)
     window.action_Reload_Package.triggered.connect(action_reload)
+    window.action_Refresh_Drives.triggered.connect(populate_target_box)
     window.action_Clear.triggered.connect(clear_action)
     window.action_About.triggered.connect(open_about_window)
     window.action_Start.triggered.connect(action_start)
+    # When the format checkbox is clicked, refresh
+    window.checkbox_format.clicked.connect(populate_target_box)
+    
     #window.forge_main_widget.(drop_open) #TODO: figure out Qt5 drop Mechanics
+    
+    #Initial population of drive selection:
+    populate_target_box()
     
     window.show()
     sys.exit(app.exec_())

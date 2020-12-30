@@ -725,6 +725,9 @@ Signature</string>
       <property name="currentText">
        <string comment="0"/>
       </property>
+      <property name="placeholderText">
+       <string/>
+      </property>
      </widget>
      <widget class="QCheckBox" name="checkbox_format">
       <property name="geometry">

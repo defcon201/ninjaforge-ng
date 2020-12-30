@@ -195,6 +195,8 @@ def get_drive_list(option):
                 if 'children' in part.keys():
                     break
                 if part['mountpoint'] == None:
+                    if part['label'] == None:
+                        part['label'] = ""
                     out_list.append( ("/dev/" + part['name'],part['size'],part['label']) )
     else:
         raise KeyError('Option must be either drive or partition')
