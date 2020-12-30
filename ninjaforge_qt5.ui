@@ -643,7 +643,7 @@ Signature</string>
        <rect>
         <x>165</x>
         <y>180</y>
-        <width>110</width>
+        <width>145</width>
         <height>30</height>
        </rect>
       </property>
@@ -654,7 +654,7 @@ Signature</string>
        </font>
       </property>
       <property name="text">
-       <string>Partition Size</string>
+       <string>Partition Size(MiB)</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
