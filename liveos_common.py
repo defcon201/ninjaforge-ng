@@ -12,6 +12,8 @@ import zipfile
 import hashlib
 import gnupg
 import tempfile
+import subprocess
+import json
 
 def slugify(in_text):
     '''return a slug. Remove spaces, and lowercase'''
@@ -20,14 +22,19 @@ def slugify(in_text):
     out_text = out_text.replace(" ","")
     
     return out_text
+    
+def byte2str(in_string):
+    '''convert bytes into string'''
+    output = str(in_string.strip())
+    output = output.lstrip("b")
+    output = output.strip("\'")
+    return output
 
 def proccess_index(in_data):
     '''Takes a binary string from a raw file read of the index, outputs a dictionary of key=value pairs # is the comment character'''
     index_values = {}
     # Convert to string and strip junk
-    in_data = str(in_data.strip())
-    in_data = in_data.lstrip("b")
-    in_data = in_data.strip("\'")
+    in_data = byte2str(in_data)
     
     # Split file into lines, and strip comments
     raw_lines  = in_data.split('\\n')    
@@ -142,6 +149,51 @@ def check_manifest(in_file,options=[]):
     # If nothing fails, return True
     return True
     
+def get_drive_list(option):
+    '''Get list of drives that are usable. option is either drive or partition'''
+    out_list   = []
+
+    if 'win' in sys.platform:
+        list_drives        = subprocess.Popen('wmic logicaldisk get name,description', shell=True, stdout=subprocess.PIPE)
+        list_drives_o, err = list_drives.communicate()
+        list_drives_o      = list_drives_o.split('\n')
+        drive_list         = "" #TODO: FIGURE OUT HOW THIS VARIABLE WORKS IN WINDOWS
+        raise EnvironmentError("windoze not supported yet: TODO: FIGURE THIS SHIT OUT!")
+
+    elif 'linux' in sys.platform:
+        list_drives_cmd  = "lsblk -J"
+        list_drives      = subprocess.Popen(list_drives_cmd, shell=True, stdout=subprocess.PIPE)
+        drive_table, err = list_drives.communicate()
+        drive_table      = byte2str(drive_table)
+        drive_table      = drive_table.replace('\\n','\n')
+        drive_table      = json.loads(drive_table)
+    else:
+       #TODO: Apple OSX support
+       raise EnvironmentError(sys.platform + ": OS Not supported...yet")
+        
+    if option == "drive":
+        parts_check = {}
+        for drive in drive_table['blockdevices']:
+            parts_check = set()
+            for part in drive['children']:
+                if 'children' in part.keys():
+                    break
+                parts_check.add(part['mountpoint'])
+            if parts_check != { None }:
+                continue
+            out_list.append("/dev/" + drive['name'])
+    elif option == "partition":
+        for drive in drive_table['blockdevices']:
+            for part in drive['children']:
+                if 'children' in part.keys():
+                    break
+                if part['mountpoint'] == None:
+                    out_list.append("/dev/" + part['name'])
+    else:
+        raise KeyError('Option must be either drive or partition')
+        
+    return out_list
+
 def package_file_md5(in_file):
     '''Opens a .liveos.zip band returns a dictionary with the key=value pairs from the md5 hashsum file. Takes two variables. Filename of the package, and a dictionary with metadata from the index file'''
     md5_sums_file   = "hash/md5"
