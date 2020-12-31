@@ -30,6 +30,17 @@ def byte2str(in_string):
     output = output.strip("\'")
     return output
 
+def os_supported():
+    '''Check if current Operating System is supported. There are OS specific calls in Forge'''
+    supported_list = ['linux', 'win', 'freebsd', 'darwin']
+
+    output = False
+    for item in supported_list:
+        if item in sys.platform:
+            output = True
+            break
+    return output
+
 def proccess_index(in_data):
     '''Takes a binary string from a raw file read of the index, outputs a dictionary of key=value pairs # is the comment character'''
     index_values = {}
@@ -169,9 +180,13 @@ def get_drive_list(option):
         drive_table      = json.loads(drive_table)
         # Drive table is a python dict{} lookup table of all drive and
         # partition information from lsblk
+        
+    elif 'freebsd' in sys.platform:
+        raise EnvironmentError("FreeBSD is not supported yet: TODO: FIGURE THIS SHIT OUT")
+    elif 'darwin' in sys.platform:
+        raise EnvironmentError("Apple Darwin(OSX/IPhone) is not supported yet: TODO FIGURE THIS SHIT OUT")
     else:
-       #TODO: Apple OSX support
-       raise EnvironmentError(sys.platform + ": OS Not supported...yet")
+       raise EnvironmentError(sys.platform + ": OS Not supported!(support is not planned)")
         
     # Parse though the drive_table object. We are looking for not mounted
     # partitions, that have no child objects, i.e. RAID, lvm, or crypto
