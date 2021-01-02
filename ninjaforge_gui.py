@@ -75,7 +75,6 @@ the package. Nothing will be written.
 ninjaforge_about = ninjaforge_about.strip()
 
 from ninjaforge_common import *
-import sys
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QApplication, QFileDialog
 from PySide2.QtCore import QFile, QCryptographicHash
