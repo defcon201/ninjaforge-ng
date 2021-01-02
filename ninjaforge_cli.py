@@ -36,18 +36,27 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description=ninjaforge_about)
-    parser.add_argument("target", nargs="", help="Partition/Drive to burn with Ninja OS or other Live OS")
+    parser.add_argument("target", nargs=1, help="Partition/Drive to burn with Ninja OS or other Live OS")
     
     parser_checks = parser.add_argument_group("Checks","Methods to Verify Package Integrity")
-    parser_checks.add_argument("-g","--gpg"  ,help="Check GPG Signatures",action="store_true",default=True)
-    parser_checks.add_argument("-a","--hash" ,help="Check MD5 Hash signatures",action="store_true",default=False)
+    parser_checks.add_argument("-g","--gpg"     , help="Check GPG Signatures",action="store_true",default=True)
+    parser_checks.add_argument("-a","--hash"    , help="Check MD5 Hash signatures",action="store_true",default=False)
     
     parser_write  = parser.add_argument_group("Write Options", "Options for USB Stick Burning")
-    parser_write.add_argument("-w","--write" ,help="Write to the USB stick. enabled by default. Disable if just checking package",default=True)
-    parser_write.add_argument("-f","--format",help="Parition the USB stick. If this option is not checked, target a partition")
+    parser_write.add_argument("-w","--write"    , help="Write to the USB stick. enabled by default. Disable if just checking package",default=True)
+    parser_write.add_argument("-f","--format"   , help="Parition the USB stick. If this option is not checked, targets a partition. If this option is check, target is a full drive",action="store_true")
 
     parser_source = parser.add_argument_group("Source", ".liveos.zip package options")
-    parser_source.add_argument('-k','--package' ,help=".liveos.zip package file to burn.",type=str,nargs=1)
+    parser_source.add_argument('-k','--package' , help=".liveos.zip package file to burn.",type=str,nargs=1)
+    
+    parser_other = parser.add_argument_group("Other", "Other Options")
+    parser_other.add_argument("-s","--script",  help="Non-interactive mode. Do not ask for confirmation, output designed for logs.",action="store_true")
+    parser_other.add_argument("-y","--yes"   ,  help="answer yes to all prompts",action="store_true")
+    
+    args = parser.parse_args()
+    
+    print(args) #DEBUG
+    #TODO: write program
 
 if __name__ == "__main__":
     main()
