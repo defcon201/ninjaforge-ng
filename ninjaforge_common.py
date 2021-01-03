@@ -14,6 +14,7 @@ import gnupg
 import tempfile
 import subprocess
 import json
+import pathlib
 
 def slugify(in_text):
     '''return a slug. Remove spaces, and lowercase'''
@@ -68,6 +69,7 @@ def proccess_index(in_data):
     
     #return to the user a dict with values from index file
     return index_values
+    
 
 def package_file_meta(in_file):
     '''Opens a .liveos.zip and returns a tupple with OS Name, Version, CPU Arch, Partition Size, GPG signature, Format Version, in that order'''
@@ -218,6 +220,29 @@ def get_drive_list(option):
         
     return out_list
 
+def partition_dev_linux(block_dev,part_size):
+    '''Formats a device for NinjaOS/LiveOS. First parition is for the OS size being part_size in megabibytes, second partition takes up rest of the device and left blank. Takes two options both strings, block_dev and part_size'''
+    sfdisk_exit_code = 0
+
+    # check for valid target
+    dev_path = pathlib.Path(block_dev)
+    if dev_path.is_block_device() == False:
+        raise TypeError('block_dev must be a valid block device')
+    # Check to part_size looks valid. At very least must be int
+    if type(part_size) != int:
+        raise TypeError('part_size must be an interger. Value in MegaBiBytes')
+
+    # sfdisk is scripting variant. Build command one line at a time
+    sfdisk_command  = "sfdisk " + block_dev + " > /dev/null << EOF\n"
+    sfdisk_command += "size=" + part_size + "MiB, type=83;\n"
+    sfdisk_command += "type=0b;\n"
+    sfdisk_command += ";\nEOF\n"
+    
+    #run sfdisk #TODO: Find a way to run this as root
+    sfdisk_exit_code = subprocess.call(sfdisk_command,shell=True)
+    
+    return sfdisk_exit_code
+    
 def package_file_md5(in_file):
     '''Opens a .liveos.zip band returns a dictionary with the key=value pairs from the md5 hashsum file. Takes two variables. Filename of the package, and a dictionary with metadata from the index file'''
     md5_sums_file   = "hash/md5"
