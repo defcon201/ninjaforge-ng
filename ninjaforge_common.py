@@ -182,41 +182,41 @@ def get_drive_list(option):
         drive_table      = json.loads(drive_table)
         # Drive table is a python dict{} lookup table of all drive and
         # partition information from lsblk
-        
+
+        # Parse though the drive_table object. We are looking for not mounted
+        # partitions, that have no child objects, i.e. RAID, lvm, or crypto
+        # This should help prevent nuking system partitions. Drive checks
+        # ALL partitions on the disk. They all have to be unmounted. partition
+        # only checks invidual partitions.
+        if option == "drive":
+            parts_check = {}
+            for drive in drive_table['blockdevices']:
+                parts_check = set()
+                for part in drive['children']:
+                    if 'children' in part.keys():
+                        break
+                    parts_check.add(part['mountpoint'])
+                if parts_check != { None }:
+                    continue
+                out_list.append( ("/dev/" + drive['name'],drive['size']) )
+        elif option == "partition":
+            for drive in drive_table['blockdevices']:
+                for part in drive['children']:
+                    if 'children' in part.keys():
+                        break
+                    if part['mountpoint'] == None:
+                        if part['label'] == None:
+                            part['label'] = ""
+                        out_list.append( ("/dev/" + part['name'],part['size'],part['label']) )
+        else:
+            raise KeyError('Option must be either drive or partition')
+            
     elif 'freebsd' in sys.platform:
         raise EnvironmentError("FreeBSD is not supported yet: TODO: FIGURE THIS SHIT OUT")
     elif 'darwin' in sys.platform:
         raise EnvironmentError("Apple Darwin(OSX/IPhone) is not supported yet: TODO FIGURE THIS SHIT OUT")
     else:
-       raise EnvironmentError(sys.platform + ": OS Not supported!(support is not planned)")
-        
-    # Parse though the drive_table object. We are looking for not mounted
-    # partitions, that have no child objects, i.e. RAID, lvm, or crypto
-    # This should help prevent nuking system partitions. Drive checks
-    # ALL partitions on the disk. They all have to be unmounted. partition
-    # only checks invidual partitions.
-    if option == "drive":
-        parts_check = {}
-        for drive in drive_table['blockdevices']:
-            parts_check = set()
-            for part in drive['children']:
-                if 'children' in part.keys():
-                    break
-                parts_check.add(part['mountpoint'])
-            if parts_check != { None }:
-                continue
-            out_list.append( ("/dev/" + drive['name'],drive['size']) )
-    elif option == "partition":
-        for drive in drive_table['blockdevices']:
-            for part in drive['children']:
-                if 'children' in part.keys():
-                    break
-                if part['mountpoint'] == None:
-                    if part['label'] == None:
-                        part['label'] = ""
-                    out_list.append( ("/dev/" + part['name'],part['size'],part['label']) )
-    else:
-        raise KeyError('Option must be either drive or partition')
+        raise EnvironmentError(sys.platform + ": OS Not supported!(support is not planned)")
         
     return out_list
 
