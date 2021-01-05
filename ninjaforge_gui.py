@@ -75,13 +75,13 @@ the package. Nothing will be written.
 ninjaforge_about = ninjaforge_about.strip()
 
 from ninjaforge_common import *
-#from PySide2.QtUiTools import QUiLoader
-#from PySide2.QtWidgets import QApplication, QFileDialog
-#from PySide2.QtCore import QFile, QCryptographicHash
-
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtCore import QCryptographicHash
+
+#from PySide2.QtUiTools import QUiLoader
+#from PySide2.QtWidgets import QApplication, QFileDialog
+#from PySide2.QtCore import QFile, QCryptographicHash
 
 # Keep track if the current selections are valid. starts with False,
 # and must be validated by checks, otherwise start will not run.
