@@ -75,9 +75,12 @@ the package. Nothing will be written.
 ninjaforge_about = ninjaforge_about.strip()
 
 from ninjaforge_common import *
-from PySide2.QtUiTools import QUiLoader
-from PySide2.QtWidgets import QApplication, QFileDialog
-from PySide2.QtCore import QFile, QCryptographicHash
+#from PySide2.QtUiTools import QUiLoader
+#from PySide2.QtWidgets import QApplication, QFileDialog
+#from PySide2.QtCore import QFile, QCryptographicHash
+
+from PyQt5 import uic
+from PyQt5.QtWidgets import QApplication, QFileDialog
 
 # Keep track if the current selections are valid. starts with False,
 # and must be validated by checks, otherwise start will not run.
@@ -268,20 +271,13 @@ def main():
     
     app = QApplication(sys.argv)
 
-    ui_file = QFile("ninjaforge_qt5.ui")
-    ui_file.open(QFile.ReadOnly)
-
-    loader = QUiLoader()
+    # Main Window
     global window
-    window = loader.load(ui_file)
-    ui_file.close()
+    window = uic.loadUi("ninjaforge_qt5.ui")
     
-    about_ui_file = QFile("ninjaforge_about.ui")
-    about_ui_file.open(QFile.ReadOnly)
-    loader = QUiLoader()
+    # About Window
     global about_window
-    about_window = loader.load(about_ui_file)
-    about_ui_file.close()
+    about_window = uic.loadUi("ninjaforge_about.ui")
     
     #button presses
     window.action_Open.triggered.connect(file_open_dialog)
