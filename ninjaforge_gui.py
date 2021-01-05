@@ -81,6 +81,7 @@ from ninjaforge_common import *
 
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtCore import QCryptographicHash
 
 # Keep track if the current selections are valid. starts with False,
 # and must be validated by checks, otherwise start will not run.
