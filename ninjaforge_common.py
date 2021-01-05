@@ -174,43 +174,8 @@ def get_drive_list(option):
         raise EnvironmentError("windoze not supported yet: TODO: FIGURE THIS SHIT OUT!")
 
     elif 'linux' in sys.platform:
-        list_drives_cmd  = "lsblk -J -o +LABEL" # -J is for JSON. We can then snarf it later
-        list_drives      = subprocess.Popen(list_drives_cmd, shell=True, stdout=subprocess.PIPE)
-        drive_table, err = list_drives.communicate()
-        drive_table      = byte2str(drive_table)
-        drive_table      = drive_table.replace('\\n','\n')
-        drive_table      = json.loads(drive_table)
-        # Drive table is a python dict{} lookup table of all drive and
-        # partition information from lsblk
+       out_list = get_drive_list_linux(option)
 
-        # Parse though the drive_table object. We are looking for not mounted
-        # partitions, that have no child objects, i.e. RAID, lvm, or crypto
-        # This should help prevent nuking system partitions. Drive checks
-        # ALL partitions on the disk. They all have to be unmounted. partition
-        # only checks invidual partitions.
-        if option == "drive":
-            parts_check = {}
-            for drive in drive_table['blockdevices']:
-                parts_check = set()
-                for part in drive['children']:
-                    if 'children' in part.keys():
-                        break
-                    parts_check.add(part['mountpoint'])
-                if parts_check != { None }:
-                    continue
-                out_list.append( ("/dev/" + drive['name'],drive['size']) )
-        elif option == "partition":
-            for drive in drive_table['blockdevices']:
-                for part in drive['children']:
-                    if 'children' in part.keys():
-                        break
-                    if part['mountpoint'] == None:
-                        if part['label'] == None:
-                            part['label'] = ""
-                        out_list.append( ("/dev/" + part['name'],part['size'],part['label']) )
-        else:
-            raise KeyError('Option must be either drive or partition')
-            
     elif 'freebsd' in sys.platform:
         raise EnvironmentError("FreeBSD is not supported yet: TODO: FIGURE THIS SHIT OUT")
     elif 'darwin' in sys.platform:
@@ -219,6 +184,56 @@ def get_drive_list(option):
         raise EnvironmentError(sys.platform + ": OS Not supported!(support is not planned)")
         
     return out_list
+
+def get_drive_list_linux(option):
+    '''sub_function for get_drive_list, just proccess GNU + Linux'''
+    out_list   = []
+    
+    list_drives_cmd  = "lsblk -J -o +LABEL" # -J is for JSON. We can then snarf it later
+    list_drives      = subprocess.Popen(list_drives_cmd, shell=True, stdout=subprocess.PIPE)
+    drive_table, err = list_drives.communicate()
+    drive_table      = byte2str(drive_table)
+    drive_table      = drive_table.replace('\\n','\n')
+    drive_table      = json.loads(drive_table)
+    # Drive table is a python dict{} lookup table of all drive and
+    # partition information from lsblk
+
+    # Parse though the drive_table object. We are looking for not mounted
+    # partitions, that have no child objects, i.e. RAID, lvm, or crypto
+    # This should help prevent nuking system partitions. Drive checks
+    # ALL partitions on the disk. They all have to be unmounted. partition
+    # only checks invidual partitions.
+    if option == "drive":
+        parts_check = {}
+        for drive in drive_table['blockdevices']:
+            if 'children' not in drive.keys():
+                out_list.append( ("/dev/" + drive['name'],drive['size']) )
+                continue
+            parts_check = set()
+            for part in drive['children']:
+                if 'children' in part.keys():
+                    break
+                parts_check.add(part['mountpoint'])
+            if parts_check != { None }:
+                continue
+            out_list.append( ("/dev/" + drive['name'],drive['size']) )
+    
+    elif option == "partition":
+        for drive in drive_table['blockdevices']:
+            if 'children' not in drive.keys():
+                continue
+            for part in drive['children']:
+                if 'children' in part.keys():
+                    break
+                if part['mountpoint'] == None:
+                    if part['label'] == None:
+                        part['label'] = ""
+                    out_list.append( ("/dev/" + part['name'],part['size'],part['label']) )
+    else:
+        raise KeyError('Option must be either drive or partition')
+        
+    return out_list
+            
 
 def partition_dev_linux(block_dev,part_size):
     '''Formats a device for NinjaOS/LiveOS. First parition is for the OS size being part_size in megabibytes, second partition takes up rest of the device and left blank. Takes two options both strings, block_dev and part_size'''
