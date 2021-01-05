@@ -171,7 +171,7 @@ def get_drive_list(option):
         list_drives_o, err = list_drives.communicate()
         list_drives_o      = list_drives_o.split('\n')
         drive_list         = "" #TODO: FIGURE OUT HOW THIS VARIABLE WORKS IN WINDOWS
-        raise EnvironmentError("windoze not supported yet: TODO: FIGURE THIS SHIT OUT!")
+        raise EnvironmentError("Windoze not supported yet: TODO: FIGURE THIS SHIT OUT!")
 
     elif 'linux' in sys.platform:
        out_list = get_drive_list_linux(option)
