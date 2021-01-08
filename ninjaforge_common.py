@@ -7,7 +7,6 @@ forge_lib_meta = {
   'version' : "0.0.0"
 }
 import sys
-import shutil
 import zipfile
 import hashlib
 import gnupg
@@ -308,7 +307,8 @@ def check_gpg_index(key_sig,file_name,format_ver):
         index       = "gpg/package_key.gpg"
     else:
         index       = "gpg/ninja_pubring.gpg"
-    temp_dir        = tempfile.mkdtemp()
+    temp_dir_obj    = tempfile.TemporaryDirectory()
+    temp_dir        = temp_dir_obj.name
     temp_index      = temp_dir + "/" + index
     invalid_package = file_name + " is not a .liveos.zip package file"
     invalid_keyring = file_name + " GPG keyring file contains invalid data"
@@ -329,13 +329,13 @@ def check_gpg_index(key_sig,file_name,format_ver):
     try:
         gpg     = gnupg.GPG(keyring=temp_index)
     except:
-        shutil.rmtree(temp_dir)
+        temp_dir_obj.cleanup()
         raise EOFError(invalid_keyring)
     # Get the keyring from the file
     keyring = gpg.list_keys()
     
     liveos_package.close()
-    shutil.rmtree(temp_dir)
+    temp_dir_obj.cleanup()
     ## Step 4 - check to make sure keyring data matches index.
     # There should only be ONE key. If not, fail
     if len(keyring) != 1:
