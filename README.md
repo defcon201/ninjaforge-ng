@@ -36,6 +36,9 @@ ninjaforge\_gui.py
 ninjaforge\_qt5.ui
 ninjaforge\_about.ui
 
+Screenshot:
+![screenshot](Ninja_Forge_screenshot.png)
+
 Forge CLI
 ---------
 TBD
