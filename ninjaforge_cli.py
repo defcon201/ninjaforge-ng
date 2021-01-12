@@ -33,6 +33,7 @@ i.e. /dev/sdXN, i.e. /dev/sdd vs /dev/sdd1
 ninjaforge_about = ninjaforge_about.strip()
 
 import argparse
+from ninjaforge_common import *
 
 def main():
     parser = argparse.ArgumentParser(description=ninjaforge_about)
