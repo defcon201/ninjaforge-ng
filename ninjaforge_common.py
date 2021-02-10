@@ -358,7 +358,53 @@ def check_file_buffer_md5(in_hash,file_bytes):
         return True
     else:
         return False
-                
+
+def unzip_temp_files(liveos_zip,base_dir,options):
+    '''Unzip all needed files to a temporary directory in base_dir. options is a set{} with gpg and md5 as potential values. returns a tempfile object of directory with these files'''
+    
+    temp_dir_obj = tempfile.TemporaryDirectory(dir=base_dir)
+    temp_dir     = temp_dir_obj.name
+    
+    index_file        = "liveos_version.conf"
+    main_image_file   = file_meta['OSSLUG'] +    "_"         + file_meta['OSVERSION'] + ".img"
+    if file_meta['FORMAT_VER'] >= 3:
+        bs_image_file = file_meta['OSSLUG'] + "_bootsector_" + file_meta['OSVERSION'] + ".img"
+    else:
+        bs_image_file = ninjabootsector + file_meta['OSVERSION'] + ".img"
+        
+    ## Unzip base files
+    # Index
+    try:
+        zip_object = zipfile.ZipFile(liveos_zip,mode='r')
+        liveos_package.extract(index_file,path=temp_dir)
+        liveos_package.extract(main_image_file,path=temp_dir)
+        liveos_package.extract(bs_image_file,path=temp_dir)
+    except:
+        temp_dir_obj.cleanup()
+        raise EOFError("Could not extract files from package")
+    
+    if "md5" in options:
+        try:
+            liveos_package.extract("hash/md5")
+        except:
+            temp_dir_obj.cleanup()
+            raise EOFError("Could not read hash sums from package")
+    
+    if "gpg" in options:
+        index_sig      = "gpg/" + index_file + ".sig"
+        main_image_sig = "gpg/" + main_image_file + ".sig"
+        bs_image_sig   + "gpg/" + bs_image_file + ".sig"
+        try:
+            liveos_package.extract(index_sig,path=temp_dir)
+            liveos_package.extract(main_image_sig,path=temp_dir)
+            liveos_package.extract(bs_image_sig,path=temp_dir)
+        except:
+            temp_dir_obj.cleanup()
+            raise EOFError("Could not read GPG sigs from package")
+            
+    liveos_package.close()
+    return temp_dir_obj
+
 def check_file_name_md5(in_hash,file_name):
     '''Check the MD5 hash of a file, read from the disk. Two arguments, in hash, and file name. Returns True/False'''
     block_size = 4096 # 4k
